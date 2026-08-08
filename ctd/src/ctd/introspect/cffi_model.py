@@ -201,8 +201,6 @@ def _libname2dict(name: str) -> dict[str, Any]:
     try:
         ctype = _ffi.typeof(_ffi.addressof(_lib, name))
     except AttributeError as ea:
-        #print(type(_ffi.addressof(_lib, name)))
-        #if name == "ctd_origin_point":
         try:
             ctype = _ffi.typeof(getattr(_lib, name))
         except TypeError as et:
@@ -236,13 +234,17 @@ class CFFICTypes:
 
         ffi_names: list[str] = sorted(set().union(*_ffi.list_types()))
         self.ffi_names = ffi_names
-        self.ffi_ctypes = [_ffiname2dict(ffi_name) for ffi_name in ffi_names]
 
-        for ctype in self.ffi_ctypes:
-            self.enum_members.update(ctype.get("relements") or {})
+        if ffi_names:
+            self.ffi_ctypes = [_ffiname2dict(ffi_name) for ffi_name in ffi_names]
+
+            for ctype in self.ffi_ctypes:
+                self.enum_members.update(ctype.get("relements") or {})
 
         lib_names: list[str] = sorted(set(dir(_lib)) - self.enum_members)
         self.lib_names = lib_names
-        self.lib_ctypes = [_libname2dict(lib_name) for lib_name in lib_names]
+
+        if lib_names:
+            self.lib_ctypes = [_libname2dict(lib_name) for lib_name in lib_names]
 
         return ffi_names, lib_names, self.ffi_ctypes, self.lib_ctypes
