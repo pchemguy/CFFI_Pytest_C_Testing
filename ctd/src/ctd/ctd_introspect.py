@@ -33,14 +33,16 @@ def main() -> int:
         for desc in ffi_ctypes
     ]
 
-    db.ctypes_insert(ffi_ctypes_filtered)
+    if ffi_names:
+        db.ctypes_insert(ffi_ctypes_filtered)
 
     lib_ctypes_filtered: list[dict[str, Any]] = [
         {prop: value for prop, value in desc.items() if prop != "ctype"}
         for desc in lib_ctypes
     ]
 
-    db.ctypes_insert(lib_ctypes_filtered)
+    if lib_names:
+        db.ctypes_insert(lib_ctypes_filtered)
 
     return 0
 
